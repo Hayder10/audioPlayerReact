@@ -10,3 +10,7 @@ body{
 li:hover{
     background-color: rgb(88, 88, 88)!important; 
 }
+
+.selected{
+    background-color: rgb(88, 88, 88)!important;
+}

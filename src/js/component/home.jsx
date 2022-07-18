@@ -10,6 +10,7 @@ import {
 //create your first component
 const Home = () => {
   const [songList, setSongList] = useState([]);
+  const [active,setActive] = useState(false);
 
   const url = "http://assets.breatheco.de/apis/sound/songs";
 
@@ -36,6 +37,7 @@ const Home = () => {
     songName = e.currentTarget.innerHTML;
     console.log(songName);
     console.log(getSongUrl(songName));
+    toggleControl();
   };
 
   function getSongUrl(name){
@@ -47,6 +49,9 @@ const Home = () => {
     return halfUrl+newArray[0].url
     }
   
+  function toggleControl(){
+    setActive(!active);
+  }
 
   return (
     <div className="container-fluid">
