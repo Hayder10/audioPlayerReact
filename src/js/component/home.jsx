@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { element } from "prop-types";
+import React, { useState, useEffect , useRef } from "react";
 import {
   FaPlayCircle,
   FaPauseCircle,
@@ -10,7 +11,9 @@ import {
 //create your first component
 const Home = () => {
   const [songList, setSongList] = useState([]);
-  const [active,setActive] = useState(false);
+  const [songUrl, setSongUrl] = useState('');
+  const [currentSong,setCurrentSong] = useState('');
+
 
   const url = "http://assets.breatheco.de/apis/sound/songs";
 
@@ -21,43 +24,51 @@ const Home = () => {
       .catch((error) => console.log(error));
   }, []);
 
-  var contentSong = songList.map((element) => (
-    <li
-      type="button"
-      onClick={(e) => {handleClick(e)}}
-      className="list-group-item list-group-item-action bg-dark text-white"
-      key={element.id}
-    >
-      {element.name}
-    </li>
-  ));
+  var urlArray =[]
+  function contentSong() {
+    return songList.map((element,index) => (
+    (songUrl === "https://assets.breatheco.de/apis/sound/"+element.url) ? (urlArray.push([index,element.name,element.url]),<li
+    type="button"
+    onClick={() => {handleClick(index)}}
+    className="list-group-item list-group-item-action bg-secondary text-white"
+    key={index}
+  >
+    {element.name}
+  </li>) : (urlArray.push([index,element.name,element.url]),<li
+    type="button"
+    onClick={() => {handleClick(index)}}
+    className="list-group-item list-group-item-action bg-dark text-white"
+    key={index}
+  >
+    {element.name}
+  </li>)
+  ))};
 
-  var songName = ''  
-  function handleClick(e){
-    songName = e.currentTarget.innerHTML;
-    console.log(songName);
-    console.log(getSongUrl(songName));
-    toggleControl();
-  };
-
-  function getSongUrl(name){
-    var aux = name;
-    var halfUrl = "https://assets.breatheco.de/apis/sound/"
-    var newArray = songList.filter((song) => {if (song.name === aux){
-      return song;
-    }})
-    return halfUrl+newArray[0].url
+  function handleClick(index){
+    /* setCurrentSong(e.currentTarget.innerHTML); */
+    var songLink = ""
+    var name = ""
+    for (var i of urlArray){
+      if (i[0] === index){
+        songLink = i[2];
+        name = i[1];
+      }
     }
+    setCurrentSong(name)
+    setSongUrl("https://assets.breatheco.de/apis/sound/"+songLink)
+  };
   
-  function toggleControl(){
-    setActive(!active);
-  }
+  console.log(currentSong)
+  console.log(songUrl)
+
+  /* Audio Management */
+  const audio = new Audio(songUrl)
 
   return (
     <div className="container-fluid">
       <div className="row bg-dark">
         <div className="col-12-md p-0">
-          <ul className="list-group list-group-flush p-2">{contentSong}</ul>
+          <ul className="list-group list-group-flush p-2">{contentSong()}</ul>
         </div>
       </div>
       <div className="fixed-bottom">
@@ -65,7 +76,7 @@ const Home = () => {
           <div id="backward" className="col-4 text-end">
             <FaFastBackward size="50" />
           </div>
-          <div className="col-2 text-center">
+          <div onClick ={() => audio.play()} className="col-2 text-center">
             <FaPlayCircle size="50" />
           </div>
           <div className="col-4 text-start">
