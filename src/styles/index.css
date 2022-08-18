@@ -5,6 +5,7 @@ body{
 
 .list-group{
     overflow-y: scroll;
+    margin-bottom: 80px;
 }
 
 li:hover{
