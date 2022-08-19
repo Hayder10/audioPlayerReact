@@ -1,5 +1,5 @@
 import { element } from "prop-types";
-import React, { useState, useEffect , useRef, useMemo } from "react";
+import React, { useState, useEffect , useRef} from "react";
 import {
   FaPlayCircle,
   FaPauseCircle,
@@ -11,14 +11,15 @@ import {
 //create your first component
 const Home = () => {
   const [songList, setSongList] = useState([]);
-  const [songUrl, setSongUrl] = useState('');
+  const [songUrl, setSongUrl] = useState("");
   const [currentSong,setCurrentSong] = useState('');
   const [id,setId] = useState('')
-  const audio = useMemo(() => new Audio(songUrl),[songUrl])
   const [playing,setPlaying] = useState(false)
   const [button,setButton] = useState(<FaPlayCircle size="50"/>)
+  const songRef = useRef(songUrl);
 
   const url = "http://assets.breatheco.de/apis/sound/songs";
+
 
   useEffect(() => {
     fetch(url)
@@ -26,6 +27,13 @@ const Home = () => {
       .then((data) => setSongList(data))
       .catch((error) => console.log(error));
   }, []);
+
+  useEffect(() => {
+    songRef.current.pause()
+    setPlaying(false)
+    setButton((<FaPlayCircle size="50"/>))
+    songRef.current.src = songUrl
+  }, [songUrl])
 
   var urlArray =[]
   function contentSong() {
@@ -60,20 +68,25 @@ const Home = () => {
     }
     setCurrentSong(name)
     setSongUrl("https://assets.breatheco.de/apis/sound/"+songLink)
+
   };
-  
+
   console.log(currentSong)
   console.log(songUrl)
   console.log(id)
+
+
+
+
   const togglePlay = () => {
     if(!playing){
       setPlaying(true);
       setButton(<FaPauseCircle size="50"/>)
-      audio.play();
+      songRef.current.play()
     }else{
       setPlaying(false);
       setButton(<FaPlayCircle size="50"/>)
-      audio.pause();
+      songRef.current.pause()
     }
   }
 
@@ -93,7 +106,6 @@ const Home = () => {
         }
       }
     }
-    togglePlay()
     setCurrentSong(songName)
     setSongUrl(songUrl)
   }
@@ -115,7 +127,6 @@ const Home = () => {
         }
       }
     }
-    togglePlay()
     setCurrentSong(songName)
     setSongUrl(songUrl)
 
@@ -154,6 +165,7 @@ const Home = () => {
         </div>
       </div>
     </div>
+    <audio src={songRef} ref={songRef} ></audio>
     </>
   );
 };
